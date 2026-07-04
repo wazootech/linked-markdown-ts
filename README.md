@@ -1,6 +1,16 @@
 # Linked Markdown TypeScript
 
-TypeScript implementation of Linked Markdown, built for Deno and published through JSR.
+TypeScript implementation of Linked Markdown, built for Deno and published
+through JSR.
+
+## API
+
+```ts
+import { parse, toQuads } from "@wazoo/linked-markdown";
+
+const doc = parse(markdown);
+const quads = toQuads(doc);
+```
 
 ## Development
 
@@ -8,3 +18,6 @@ TypeScript implementation of Linked Markdown, built for Deno and published throu
 git submodule update --init --recursive
 deno test --allow-read
 ```
+
+The conformance suite is consumed from the `wazootech/linked-markdown` spec
+repository as a git submodule.
