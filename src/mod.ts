@@ -3,8 +3,8 @@ export { parse } from "./parse.ts";
 export { toNTriples, toQuads } from "./rdf.ts";
 export type {
   DataFactory,
-  LmpDocument,
-  LmpLink,
+  LinkedMarkdownDocument,
+  LinkedMarkdownLink,
   ParseOptions,
   Quad,
   Term,

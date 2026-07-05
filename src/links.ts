@@ -1,10 +1,10 @@
-import type { LmpLink } from "./types.ts";
+import type { LinkedMarkdownLink } from "./types.ts";
 
 const externalTarget = /^[a-z][a-z0-9+.-]*:/i;
 
-export function extractLinks(body: string): LmpLink[] {
+export function extractLinks(body: string): LinkedMarkdownLink[] {
   const masked = maskCodeSpans(body);
-  const links: LmpLink[] = [];
+  const links: LinkedMarkdownLink[] = [];
 
   for (const match of masked.matchAll(/\[([^\]\n]+)\]\(([^)\n]+)\)/g)) {
     const [raw, text, target] = match;

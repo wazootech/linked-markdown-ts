@@ -1,11 +1,15 @@
 import { extractJson, extractYaml } from "@std/front-matter";
 import { extractLinks } from "./links.ts";
-import { LmdError, type LmpDocument, type ParseOptions } from "./types.ts";
+import {
+  type LinkedMarkdownDocument,
+  LmdError,
+  type ParseOptions,
+} from "./types.ts";
 
 export function parse(
   content: string,
   _options: ParseOptions = {},
-): LmpDocument {
+): LinkedMarkdownDocument {
   const normalized = content.replaceAll("\r\n", "\n");
   const { attrs: frontmatter, body } = extractFrontmatter(normalized);
   const context = normalizeContext(frontmatter["@context"]);

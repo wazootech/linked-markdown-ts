@@ -1,7 +1,7 @@
 import { expandCurie } from "./parse.ts";
 import type {
   DataFactory,
-  LmpDocument,
+  LinkedMarkdownDocument,
   Quad,
   Term,
   ToQuadsOptions,
@@ -28,7 +28,7 @@ const defaultFactory: DataFactory = {
 };
 
 export function toQuads(
-  doc: LmpDocument,
+  doc: LinkedMarkdownDocument,
   options: ToQuadsOptions = {},
 ): Quad[] {
   if (!doc.id) return [];
@@ -73,7 +73,7 @@ export function toQuads(
   return quads;
 }
 
-export function toNTriples(doc: LmpDocument): string {
+export function toNTriples(doc: LinkedMarkdownDocument): string {
   return toQuads(doc).map(formatQuad).sort().join("\n") + "\n";
 }
 

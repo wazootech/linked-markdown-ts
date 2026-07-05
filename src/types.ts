@@ -1,6 +1,6 @@
 export type LinkType = "wikilink" | "markdown";
 
-export interface LmpLink {
+export interface LinkedMarkdownLink {
   linkType: LinkType;
   target: string;
   text: string;
@@ -8,13 +8,13 @@ export interface LmpLink {
   isExternal: boolean;
 }
 
-export interface LmpDocument {
+export interface LinkedMarkdownDocument {
   id: string | null;
   types: string[];
   context: Record<string, string>;
   frontmatter: Record<string, unknown>;
   body: string;
-  links: LmpLink[];
+  links: LinkedMarkdownLink[];
 }
 
 export interface ParseOptions {
