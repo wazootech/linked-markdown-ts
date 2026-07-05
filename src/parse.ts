@@ -5,16 +5,8 @@ export interface ParseOptions {
   bodyPredicate?: string;
 }
 
-export interface ParseResult {
-  [additionalProperties: string]: unknown;
-  "@id"?: string;
-  "@type"?: string | string[];
-  "@context"?: string | Record<string, unknown>;
-}
-
-export function parse(content: string, options?: ParseOptions): ParseResult {
+export function parse(content: string, options?: ParseOptions): Record<string, unknown> {
   const { attrs, body } = extract<Record<string, unknown>>(content);
-  const parsed: ParseResult = { ...attrs };
-  if (options?.bodyPredicate) parsed[options.bodyPredicate] = body;
-  return parsed;
+  if (options?.bodyPredicate) attrs[options.bodyPredicate] = body;
+  return attrs;
 }
