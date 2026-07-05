@@ -1,5 +1,5 @@
 export { extractLinks } from "./links.ts";
-export { parse } from "./parse.ts";
+export { extract } from "./extract.ts";
 export { toNTriples, toQuads } from "./rdf.ts";
 export type {
   DataFactory,

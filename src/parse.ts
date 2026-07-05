@@ -1,109 +1,82 @@
-import { extractJson, extractYaml } from "@std/front-matter";
-import { extractLinks } from "./links.ts";
-import {
-  type LinkedMarkdownDocument,
-  LinkedMarkdownError,
-  type ParseOptions,
-} from "./types.ts";
+import type { Extract } from "@std/front-matter";
+import { deepMerge } from "@std/collections/deep-merge";
+import { extract } from "./extract.ts";
 
-export function parse(
-  content: string,
-  _options: ParseOptions = {},
-): LinkedMarkdownDocument {
-  const normalized = content.replaceAll("\r\n", "\n");
-  const { attrs: frontmatter, body } = extractFrontmatter(normalized);
-  const context = normalizeContext(frontmatter["@context"]);
-  const id = readString(frontmatter["@id"] ?? frontmatter.id);
+/**
+ * ParseOptions defines the options for parsing Linked Markdown content.
+ */
+export interface ParseOptions {
+  /**
+   * id is the unique identifier for the Linked Markdown document. It is used
+   * to generate IRIs for the document and its components.
+   */
+  id?: string;
 
-  if (!id) {
-    throw new LinkedMarkdownError(
-      "LMD_MISSING_ID",
-      "Expected id or @id in frontmatter.",
-    );
-  }
+  /**
+   * type is the type of the Linked Markdown document. It is used to provide additional
+   * information about the document and to generate IRIs for its components.
+   */
+  type?: string | string[];
 
-  const rawTypes = frontmatter["@type"] ?? frontmatter.type;
-  if (rawTypes === undefined) {
-    throw new LinkedMarkdownError(
-      "LMD_MISSING_TYPE",
-      "Expected @type or type in frontmatter.",
-    );
-  }
+  /**
+   * context is the RDF context for the Linked Markdown document. It is used
+   * to resolve relative IRIs and to provide additional information about the document.
+   */
+  context?: string | Record<string, unknown>;
 
-  const types = normalizeStringArray(rawTypes).map((type) =>
-    expandCurie(type, context)
-  );
-  return {
-    id,
-    types,
-    context,
-    frontmatter,
-    body,
-    links: extractLinks(body),
+  /**
+   * bodyPredicate is the predicate used to link the body of the Linked Markdown
+   * document to its subject. If it is not present, the content will not be
+   * linked to the subject. If it is present, the content will be linked to the
+   * subject using the specified predicate.
+   */
+  bodyPredicate?: string;
+}
+
+/**
+ * ParseResult defines the result of parsing Linked Markdown content. It
+ * includes the extracted front matter, the body content, and the parsed
+ * attributes from the front matter.
+ */
+export interface ParseResult {
+  [additionalProperties: string]: unknown;
+
+  /**
+   * '@id' is the unique identifier for the Linked Markdown document. It is used
+   * to generate IRIs for the document and its components.
+   */
+  "@id"?: string;
+
+  /**
+   * '@type' is the type of the Linked Markdown document. It is used to provide additional
+   * information about the document and to generate IRIs for its components.
+   */
+  "@type"?: string | string[];
+
+  /**
+   * '@context' is the RDF context for the Linked Markdown document. It is used
+   * to resolve relative IRIs and to provide additional information about the document.
+   */
+  "@context"?: string | Record<string, unknown>;
+}
+
+/**
+ * parse parses Linked Markdown content and returns a structured representation
+ * of the document.
+ */
+export function parse(content: string, options?: ParseOptions): ParseResult {
+  const result = extract<unknown>(content);
+  const parsed: ParseResult = {
+    ...result.attrs,
+    "@id": options?.id,
+    "@type": options?.type,
+    "@context": options?.context,
   };
-}
 
-function extractFrontmatter(
-  source: string,
-): { attrs: Record<string, unknown>; body: string } {
-  if (!source.startsWith("---")) {
-    throw new LinkedMarkdownError(
-      "LMD_MISSING_FRONTMATTER",
-      "Expected frontmatter delimited by --- at the start of the document.",
-    );
+  if (options?.bodyPredicate) {
+    parsed[options.bodyPredicate] = result.body;
   }
 
-  const extracted = source.startsWith("---json")
-    ? extractJson<Record<string, unknown>>(source)
-    : extractYaml<Record<string, unknown>>(source);
+  return deepMerge(parsed, result.attrs);   
 
-  if (
-    !extracted.attrs || typeof extracted.attrs !== "object" ||
-    Array.isArray(extracted.attrs)
-  ) {
-    throw new LinkedMarkdownError(
-      "LMD_INVALID_FRONTMATTER",
-      "Frontmatter must parse to an object.",
-    );
-  }
-  return extracted;
-}
-
-function normalizeContext(value: unknown): Record<string, string> {
-  if (!value || typeof value !== "object" || Array.isArray(value)) return {};
-
-  const context: Record<string, string> = {};
-  for (const [key, prefix] of Object.entries(value)) {
-    if (typeof prefix === "string") context[key] = prefix;
-  }
-  return context;
-}
-
-function normalizeStringArray(value: unknown): string[] {
-  if (typeof value === "string") return [value];
-  if (Array.isArray(value) && value.every((item) => typeof item === "string")) {
-    return value;
-  }
-  throw new LinkedMarkdownError(
-    "LMD_INVALID_TYPE",
-    "Expected @type or type to be a string or string array.",
-  );
-}
-
-function readString(value: unknown): string | null {
-  return typeof value === "string" && value.length > 0 ? value : null;
-}
-
-export function expandCurie(
-  value: string,
-  context: Record<string, string>,
-): string {
-  if (/^[a-z][a-z0-9+.-]*:\/\//i.test(value)) return value;
-
-  const separator = value.indexOf(":");
-  if (separator === -1) return value;
-
-  const prefix = value.slice(0, separator);
-  const suffix = value.slice(separator + 1);
-  return context[prefix] ? `${context[prefix]}${suffix}` : value;
 }
