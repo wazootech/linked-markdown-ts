@@ -2,7 +2,7 @@ import { extractJson, extractYaml } from "@std/front-matter";
 import { extractLinks } from "./links.ts";
 import {
   type LinkedMarkdownDocument,
-  LmdError,
+  LinkedMarkdownError,
   type ParseOptions,
 } from "./types.ts";
 
@@ -16,12 +16,15 @@ export function parse(
   const id = readString(frontmatter["@id"] ?? frontmatter.id);
 
   if (!id) {
-    throw new LmdError("LMD_MISSING_ID", "Expected id or @id in frontmatter.");
+    throw new LinkedMarkdownError(
+      "LMD_MISSING_ID",
+      "Expected id or @id in frontmatter.",
+    );
   }
 
   const rawTypes = frontmatter["@type"] ?? frontmatter.type;
   if (rawTypes === undefined) {
-    throw new LmdError(
+    throw new LinkedMarkdownError(
       "LMD_MISSING_TYPE",
       "Expected @type or type in frontmatter.",
     );
@@ -44,7 +47,7 @@ function extractFrontmatter(
   source: string,
 ): { attrs: Record<string, unknown>; body: string } {
   if (!source.startsWith("---")) {
-    throw new LmdError(
+    throw new LinkedMarkdownError(
       "LMD_MISSING_FRONTMATTER",
       "Expected frontmatter delimited by --- at the start of the document.",
     );
@@ -58,7 +61,7 @@ function extractFrontmatter(
     !extracted.attrs || typeof extracted.attrs !== "object" ||
     Array.isArray(extracted.attrs)
   ) {
-    throw new LmdError(
+    throw new LinkedMarkdownError(
       "LMD_INVALID_FRONTMATTER",
       "Frontmatter must parse to an object.",
     );
@@ -81,7 +84,7 @@ function normalizeStringArray(value: unknown): string[] {
   if (Array.isArray(value) && value.every((item) => typeof item === "string")) {
     return value;
   }
-  throw new LmdError(
+  throw new LinkedMarkdownError(
     "LMD_INVALID_TYPE",
     "Expected @type or type to be a string or string array.",
   );

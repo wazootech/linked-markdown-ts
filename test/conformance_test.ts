@@ -1,5 +1,5 @@
 import { assertEquals, assertInstanceOf } from "@std/assert";
-import { LmdError, parse, toNTriples } from "../src/mod.ts";
+import { LinkedMarkdownError, parse, toNTriples } from "../src/mod.ts";
 
 interface ManifestCase {
   id: string;
@@ -28,7 +28,7 @@ for (const testCase of manifest.cases) {
       try {
         parse(input);
       } catch (error) {
-        assertInstanceOf(error, LmdError);
+        assertInstanceOf(error, LinkedMarkdownError);
         assertEquals(error.code, testCase.expectError.code);
         return;
       }

@@ -10,4 +10,4 @@ export type {
   Term,
   ToQuadsOptions,
 } from "./types.ts";
-export { LmdError } from "./types.ts";
+export { LinkedMarkdownError } from "./types.ts";

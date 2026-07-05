@@ -44,9 +44,9 @@ export interface ToQuadsOptions {
   dataFactory?: DataFactory;
 }
 
-export class LmdError extends Error {
+export class LinkedMarkdownError extends Error {
   constructor(public readonly code: string, message: string) {
     super(message);
-    this.name = "LmdError";
+    this.name = "LinkedMarkdownError";
   }
 }
