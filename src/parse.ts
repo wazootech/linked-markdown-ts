@@ -1,6 +1,6 @@
-import type { Extract } from "@std/front-matter";
 import { deepMerge } from "@std/collections/deep-merge";
 import { extract } from "./extract.ts";
+
 
 /**
  * ParseOptions defines the options for parsing Linked Markdown content.
@@ -65,18 +65,31 @@ export interface ParseResult {
  * of the document.
  */
 export function parse(content: string, options?: ParseOptions): ParseResult {
-  const result = extract<unknown>(content);
-  const parsed: ParseResult = {
-    ...result.attrs,
-    "@id": options?.id,
-    "@type": options?.type,
-    "@context": options?.context,
-  };
+  const { attrs, body } = extract<Record<string, unknown>>(content);
+  const {
+    "@id": atId,
+    id,
+    "@type": atType,
+    type,
+    "@context": atContext,
+    context,
+    ...cleanAttrs
+  } = attrs;
 
-  if (options?.bodyPredicate) {
-    parsed[options.bodyPredicate] = result.body;
-  }
+  const resolvedId = options?.id ?? atId ?? id;
+  const resolvedType = options?.type ?? atType ?? type;
+  const rawContext = atContext ?? context;
 
-  return deepMerge(parsed, result.attrs);   
+  const ctx = typeof options?.context === "object" && typeof rawContext === "object"
+    ? deepMerge(rawContext as Record<string, unknown>, options.context as Record<string, unknown>)
+    : options?.context ?? rawContext;
 
+  const parsed: ParseResult = cleanAttrs;
+
+  if (resolvedId) parsed["@id"] = resolvedId as string;
+  if (resolvedType) parsed["@type"] = resolvedType as string | string[];
+  if (ctx) parsed["@context"] = ctx as string | Record<string, unknown>;
+  if (options?.bodyPredicate) parsed[options.bodyPredicate] = body;
+
+  return parsed;
 }
