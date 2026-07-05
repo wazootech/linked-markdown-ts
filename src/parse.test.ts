@@ -1,5 +1,5 @@
-import { assertEquals } from "@std/assert";
-import { parse } from "./parse.ts";
+import { assertEquals, assertThrows } from "@std/assert";
+import { parse, LmdError, LMD_MISSING_ID, LMD_MISSING_TYPE } from "./parse.ts";
 
 Deno.test("parse preserves canonical @id, @type, and @context", () => {
   const content = `---
@@ -68,6 +68,8 @@ type: schema:Article
 
 Deno.test("parse merges context from options and frontmatter", () => {
   const content = `---
+"@id": https://example.org/doc
+"@type": schema:Article
 "@context":
   schema: https://schema.org/
 ---
@@ -104,4 +106,38 @@ Article text body goes here.
     result["schema:articleBody"],
     "# Main Heading\n\nArticle text body goes here.\n",
   );
+});
+
+Deno.test("parse throws LMD_MISSING_ID when no id or @id is present", () => {
+  const content = `---
+type: schema:Article
+---
+Body
+`;
+
+  assertThrows(
+    () => parse(content),
+    LmdError,
+    "missing required @id or id",
+  );
+  try { parse(content); } catch (e: unknown) {
+    assertEquals((e as LmdError).code, LMD_MISSING_ID);
+  }
+});
+
+Deno.test("parse throws LMD_MISSING_TYPE when no type or @type is present", () => {
+  const content = `---
+id: https://example.org/doc
+---
+Body
+`;
+
+  assertThrows(
+    () => parse(content),
+    LmdError,
+    "missing required @type or type",
+  );
+  try { parse(content); } catch (e: unknown) {
+    assertEquals((e as LmdError).code, LMD_MISSING_TYPE);
+  }
 });

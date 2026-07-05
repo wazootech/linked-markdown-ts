@@ -1,5 +1,5 @@
 import { assertEquals } from "@std/assert";
-import { parse } from "../src/mod.ts";
+import { parse, LmdError } from "../src/mod.ts";
 
 interface ManifestCase {
   id: string;
@@ -29,6 +29,16 @@ const manifest = JSON.parse(
 ) as { cases: ManifestCase[] };
 
 for (const testCase of manifest.cases) {
+  if (testCase.expectError) {
+    Deno.test(`conformance: ${testCase.id}`, async () => {
+      const input = await readFixture(testCase.input);
+      let thrown: unknown;
+      try { parse(input); } catch (e) { thrown = e; }
+      assertEquals((thrown as LmdError).code, testCase.expectError!.code);
+    });
+    continue;
+  }
+
   const parsedFixture = testCase.expect?.parsed;
   if (!parsedFixture) continue;
 

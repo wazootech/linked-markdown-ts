@@ -2,6 +2,19 @@ import { deepMerge } from "@std/collections/deep-merge";
 import { extract } from "./extract.ts";
 
 
+export class LmdError extends Error {
+  constructor(
+    message: string,
+    public code: string,
+  ) {
+    super(message);
+    this.name = "LmdError";
+  }
+}
+
+export const LMD_MISSING_ID = "LMD_MISSING_ID";
+export const LMD_MISSING_TYPE = "LMD_MISSING_TYPE";
+
 /**
  * ParseOptions defines the options for parsing Linked Markdown content.
  */
@@ -87,10 +100,23 @@ export function parse(content: string, options?: ParseOptions): ParseResult {
     ? deepMerge(rawContext as Record<string, unknown>, options.context as Record<string, unknown>)
     : options?.context ?? rawContext;
 
+  if (!resolvedId) {
+    throw new LmdError(
+      "Document is missing required @id or id field",
+      LMD_MISSING_ID,
+    );
+  }
+  if (!resolvedType) {
+    throw new LmdError(
+      "Document is missing required @type or type field",
+      LMD_MISSING_TYPE,
+    );
+  }
+
   const parsed: ParseResult = cleanAttrs;
 
-  if (resolvedId) parsed["@id"] = resolvedId as string;
-  if (resolvedType) parsed["@type"] = resolvedType as string | string[];
+  parsed["@id"] = resolvedId as string;
+  parsed["@type"] = resolvedType as string | string[];
   if (ctx) parsed["@context"] = ctx as string | Record<string, unknown>;
   if (options?.bodyPredicate) parsed[options.bodyPredicate] = body;
 
