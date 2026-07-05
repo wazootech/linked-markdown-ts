@@ -34,9 +34,10 @@ export interface ParseOptions {
 }
 
 /**
- * ParseResult defines the result of parsing Linked Markdown content. It
- * includes the extracted front matter, the body content, and the parsed
- * attributes from the front matter.
+ * ParseResult represents a flattened JSON-LD node parsed from a Linked
+ * Markdown document. The result is a single node with the canonical '@id',
+ * '@type', '@context', and any other frontmatter properties as direct node
+ * properties.
  */
 export interface ParseResult {
   [additionalProperties: string]: unknown;
@@ -61,8 +62,10 @@ export interface ParseResult {
 }
 
 /**
- * parse parses Linked Markdown content and returns a structured representation
- * of the document.
+ * parse parses Linked Markdown content and returns a single flattened JSON-LD
+ * node. The frontmatter attrs are normalized: legacy aliases (id, type, context)
+ * are promoted to their canonical '@' forms, and options override or fill in
+ * identity, type, context, and body predicate.
  */
 export function parse(content: string, options?: ParseOptions): ParseResult {
   const { attrs, body } = extract<Record<string, unknown>>(content);

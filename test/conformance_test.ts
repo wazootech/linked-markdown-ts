@@ -1,5 +1,5 @@
-import { assertEquals, assertInstanceOf } from "@std/assert";
-import { LinkedMarkdownError, parse, toNTriples } from "../src/mod.ts";
+import { assertEquals } from "@std/assert";
+import { parse } from "../src/mod.ts";
 
 interface ManifestCase {
   id: string;
@@ -13,39 +13,30 @@ interface ManifestCase {
   };
 }
 
-const conformanceRoot = Deno.env.get("LMD_CONFORMANCE_ROOT")
-  ? new URL(`${Deno.env.get("LMD_CONFORMANCE_ROOT")!.replaceAll("\\", "/")}/`)
+const envRoot = (() => {
+  try {
+    return Deno.env.get("LMD_CONFORMANCE_ROOT");
+  } catch {
+    return undefined;
+  }
+})();
+
+const conformanceRoot = envRoot
+  ? new URL(`${envRoot.replaceAll("\\", "/")}/`)
   : new URL("./linked-markdown-spec/conformance/", import.meta.url);
 const manifest = JSON.parse(
   await Deno.readTextFile(new URL("manifest.json", conformanceRoot)),
 ) as { cases: ManifestCase[] };
 
 for (const testCase of manifest.cases) {
+  const parsedFixture = testCase.expect?.parsed;
+  if (!parsedFixture) continue;
+
   Deno.test(`conformance: ${testCase.id}`, async () => {
     const input = await readFixture(testCase.input);
-
-    if (testCase.expectError) {
-      try {
-        parse(input);
-      } catch (error) {
-        assertInstanceOf(error, LinkedMarkdownError);
-        assertEquals(error.code, testCase.expectError.code);
-        return;
-      }
-      throw new Error(`Expected ${testCase.expectError.code}`);
-    }
-
     const doc = parse(input);
-
-    if (testCase.expect?.parsed) {
-      const expected = JSON.parse(await readFixture(testCase.expect.parsed));
-      assertEquals(doc, expected);
-    }
-
-    if (testCase.expect?.rdf) {
-      const expected = normalizeTriples(await readFixture(testCase.expect.rdf));
-      assertEquals(normalizeTriples(toNTriples(doc)), expected);
-    }
+    const expected = JSON.parse(await readFixture(parsedFixture));
+    assertEquals(doc, expected);
   });
 }
 

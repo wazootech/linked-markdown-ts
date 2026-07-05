@@ -2,9 +2,11 @@ import { extractJson, extractToml, extractYaml, test } from "@std/front-matter";
 import type { Extract } from "@std/front-matter";
 
 /**
- * extract extracts and parses
+ * extract extracts the raw frontmatter block and body from a Linked Markdown
+ * document. This is the low-level AST boundary — it returns the raw string,
+ * the body, and the parsed attrs object without any normalization or merge.
+ *
  * {@link https://github.com/wazootech/linked-markdown | Linked Markdown}
- * from the metadata of front matter content.
  *
  * @example Extract front matter (YAML)
  * ```ts
@@ -63,8 +65,8 @@ import type { Extract } from "@std/front-matter";
  * ```
  *
  * @typeParam T The type of the parsed front matter.
- * @param text The text to extract front matter from.
- * @returns The extracted front matter and body content.
+ * @param content The text to extract front matter from.
+ * @returns The raw AST: frontMatter string, body string, and attrs object.
  */
 export function extract<T>(
   content: string,
