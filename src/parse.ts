@@ -1,93 +1,20 @@
 import { extract } from "./extract.ts";
 
 
-export class LmdError extends Error {
-  constructor(
-    message: string,
-    public code: string,
-  ) {
-    super(message);
-    this.name = "LmdError";
-  }
-}
-
-export const LMD_MISSING_ID = "LMD_MISSING_ID";
-export const LMD_MISSING_TYPE = "LMD_MISSING_TYPE";
-
-/**
- * ParseOptions defines the options for parsing Linked Markdown content.
- */
 export interface ParseOptions {
-  /**
-   * bodyPredicate is the predicate used to link the body of the Linked Markdown
-   * document to its subject. If it is not present, the content will not be
-   * linked to the subject. If it is present, the content will be linked to the
-   * subject using the specified predicate.
-   */
   bodyPredicate?: string;
 }
 
-/**
- * ParseResult represents a flattened JSON-LD node parsed from a Linked
- * Markdown document. The result is a single node with the canonical '@id',
- * '@type', '@context', and any other frontmatter properties as direct node
- * properties.
- */
 export interface ParseResult {
   [additionalProperties: string]: unknown;
-
-  /**
-   * '@id' is the unique identifier for the Linked Markdown document. It is used
-   * to generate IRIs for the document and its components.
-   */
   "@id"?: string;
-
-  /**
-   * '@type' is the type of the Linked Markdown document. It is used to provide additional
-   * information about the document and to generate IRIs for its components.
-   */
   "@type"?: string | string[];
-
-  /**
-   * '@context' is the RDF context for the Linked Markdown document. It is used
-   * to resolve relative IRIs and to provide additional information about the document.
-   */
   "@context"?: string | Record<string, unknown>;
 }
 
-/**
- * parse parses Linked Markdown content and returns a single flattened JSON-LD
- * node. The frontmatter must contain '@id' and '@type'. Bare 'id' and 'type'
- * keys are not recognized as aliases.
- */
 export function parse(content: string, options?: ParseOptions): ParseResult {
   const { attrs, body } = extract<Record<string, unknown>>(content);
-  const {
-    "@id": atId,
-    "@type": atType,
-    "@context": atContext,
-    ...cleanAttrs
-  } = attrs;
-
-  if (!atId) {
-    throw new LmdError(
-      "Document is missing required @id field",
-      LMD_MISSING_ID,
-    );
-  }
-  if (!atType) {
-    throw new LmdError(
-      "Document is missing required @type field",
-      LMD_MISSING_TYPE,
-    );
-  }
-
-  const parsed: ParseResult = cleanAttrs;
-
-  parsed["@id"] = atId as string;
-  parsed["@type"] = atType as string | string[];
-  if (atContext) parsed["@context"] = atContext as string | Record<string, unknown>;
+  const parsed: ParseResult = { ...attrs };
   if (options?.bodyPredicate) parsed[options.bodyPredicate] = body;
-
   return parsed;
 }

@@ -1,7 +1,7 @@
-import { assertEquals, assertThrows } from "@std/assert";
-import { parse, LmdError, LMD_MISSING_ID, LMD_MISSING_TYPE } from "./parse.ts";
+import { assertEquals } from "@std/assert";
+import { parse } from "./parse.ts";
 
-Deno.test("parse preserves canonical @id, @type, and @context", () => {
+Deno.test("parse preserves @id, @type, @context, and other attrs", () => {
   const content = `---
 "@id": https://example.org/docs/1
 "@type": schema:Article
@@ -24,6 +24,17 @@ name: Test Article
   });
 });
 
+Deno.test("parse works without @id or @type (valid JSON-LD)", () => {
+  const content = `---
+title: Untitled
+---
+Body
+`;
+
+  const result = parse(content);
+  assertEquals(result, { title: "Untitled" });
+});
+
 Deno.test("parse attaches body content to bodyPredicate when specified", () => {
   const content = `---
 "@id": https://example.org/docs/article
@@ -42,38 +53,4 @@ Article text body goes here.
     result["schema:articleBody"],
     "# Main Heading\n\nArticle text body goes here.\n",
   );
-});
-
-Deno.test("parse throws LMD_MISSING_ID when no @id is present", () => {
-  const content = `---
-"@type": schema:Article
----
-Body
-`;
-
-  assertThrows(
-    () => parse(content),
-    LmdError,
-    "missing required @id",
-  );
-  try { parse(content); } catch (e: unknown) {
-    assertEquals((e as LmdError).code, LMD_MISSING_ID);
-  }
-});
-
-Deno.test("parse throws LMD_MISSING_TYPE when no @type is present", () => {
-  const content = `---
-"@id": https://example.org/doc
----
-Body
-`;
-
-  assertThrows(
-    () => parse(content),
-    LmdError,
-    "missing required @type",
-  );
-  try { parse(content); } catch (e: unknown) {
-    assertEquals((e as LmdError).code, LMD_MISSING_TYPE);
-  }
 });
