@@ -16,7 +16,6 @@ const quads = toQuads(doc);
 
 ```sh
 git submodule update --init --recursive
-deno test --allow-read
 ```
 
 The conformance suite is consumed from the `wazootech/linked-markdown` spec
