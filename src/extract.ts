@@ -71,6 +71,7 @@ import type { Extract } from "@std/front-matter";
 export function extract<T>(
   content: string,
 ): Extract<T> {
+  content = content.replace(/^\uFEFF/, "").replace(/\r\n/g, "\n");
   if (test(content, ["json"])) return extractJson<T>(content);
   if (test(content, ["toml"])) return extractToml<T>(content);
   if (test(content, ["yaml"])) return extractYaml<T>(content);
