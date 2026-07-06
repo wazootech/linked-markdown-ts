@@ -38,6 +38,14 @@ bunx jsr add @wazoo/linked-markdown
 import { extract } from "@wazoo/linked-markdown";
 ```
 
+### Browser (CDN)
+
+For no-build browser demos, import from esm.sh:
+
+```js
+import { extract } from "https://esm.sh/@jsr/wazoo__linked-markdown@0.1.0";
+```
+
 ## API
 
 ```ts
