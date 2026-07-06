@@ -9,6 +9,23 @@ TypeScript implementation of Linked Markdown, published through JSR.
 **Status:** All 40 conformance tests passing (14 unit + 26 conformance across
 parse, extract, and error tiers).
 
+## Installation
+
+```sh
+# Deno
+deno add linked-markdown@jsr:@wazoo/linked-markdown
+```
+
+```sh
+# Node (npm)
+npx jsr add @wazoo/linked-markdown
+```
+
+```sh
+# Bun
+bunx jsr add @wazoo/linked-markdown
+```
+
 ## API
 
 ```ts
