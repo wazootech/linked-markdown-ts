@@ -1,5 +1,9 @@
 # `linked-markdown-ts`
 
+[![JSR](https://jsr.io/badges/@wazoo/linked-markdown)](https://jsr.io/@wazoo/linked-markdown)
+[![JSR Score](https://jsr.io/badges/@wazoo/linked-markdown/score)](https://jsr.io/@wazoo/linked-markdown)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
 TypeScript implementation of Linked Markdown, published through JSR.
 
 **Status:** All 40 conformance tests passing (14 unit + 26 conformance across parse, extract, and error tiers).
