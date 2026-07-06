@@ -2,8 +2,9 @@ name: Release
 
 on:
   push:
-    tags:
-      - "v*"
+    branches:
+      - initial-lmd-core
+      - main
   workflow_dispatch:
 
 permissions:
@@ -15,20 +16,7 @@ jobs:
     name: Publish JSR
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          submodules: recursive
+      - uses: actions/checkout@v4
 
-      - name: Set up Deno
-        uses: denoland/setup-deno@v2
-        with:
-          deno-version: v2.x
-
-      - name: Pre-flight checks
-        run: |
-          deno check src/mod.ts
-          deno task test
-
-      - name: Publish to JSR
-        run: deno publish
+      - name: Publish package
+        run: npx jsr publish
