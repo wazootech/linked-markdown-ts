@@ -1,6 +1,10 @@
 import { extractJson, extractToml, extractYaml, test } from "@std/front-matter";
 import type { Extract } from "@std/front-matter";
-import { LinkedMarkdownError, LMD_INVALID_FRONTMATTER, LMD_NO_FRONTMATTER } from "./errors.ts";
+import {
+  LinkedMarkdownError,
+  LMD_INVALID_FRONTMATTER,
+  LMD_NO_FRONTMATTER,
+} from "./errors.ts";
 
 /**
  * extract extracts front matter and body content from a LinkedMarkdown document.
@@ -13,14 +17,26 @@ export function extract<T>(content: string): Extract<T> {
 
   // Check for unknown ---<word> marker
   const markerMatch = content.match(/^---(\w+)/);
-  if (markerMatch && !["yaml", "json", "toml", ""].includes(markerMatch[1].toLowerCase())) {
-    throw new LinkedMarkdownError(LMD_INVALID_FRONTMATTER, `Unknown front matter marker: ${markerMatch[1]}`);
+  if (
+    markerMatch &&
+    !["yaml", "json", "toml", ""].includes(markerMatch[1].toLowerCase())
+  ) {
+    throw new LinkedMarkdownError(
+      LMD_INVALID_FRONTMATTER,
+      `Unknown front matter marker: ${markerMatch[1]}`,
+    );
   }
 
   // Check for unknown = <word> = marker
   const equalsMatch = content.match(/^= (\w+) =/);
-  if (equalsMatch && !["yaml", "json", "toml"].includes(equalsMatch[1].toLowerCase())) {
-    throw new LinkedMarkdownError(LMD_INVALID_FRONTMATTER, `Unknown front matter marker: ${equalsMatch[1]}`);
+  if (
+    equalsMatch &&
+    !["yaml", "json", "toml"].includes(equalsMatch[1].toLowerCase())
+  ) {
+    throw new LinkedMarkdownError(
+      LMD_INVALID_FRONTMATTER,
+      `Unknown front matter marker: ${equalsMatch[1]}`,
+    );
   }
 
   // Check if any known opener exists at all
@@ -43,7 +59,10 @@ export function extract<T>(content: string): Extract<T> {
     }
 
     // Validate attrs is a plain object
-    if (typeof result.attrs !== "object" || result.attrs === null || Array.isArray(result.attrs)) {
+    if (
+      typeof result.attrs !== "object" || result.attrs === null ||
+      Array.isArray(result.attrs)
+    ) {
       throw new LinkedMarkdownError(LMD_INVALID_FRONTMATTER);
     }
 
@@ -55,6 +74,10 @@ export function extract<T>(content: string): Extract<T> {
     };
   } catch (e) {
     if (e instanceof LinkedMarkdownError) throw e;
-    throw new LinkedMarkdownError(LMD_INVALID_FRONTMATTER, undefined, e instanceof Error ? e : undefined);
+    throw new LinkedMarkdownError(
+      LMD_INVALID_FRONTMATTER,
+      undefined,
+      e instanceof Error ? e : undefined,
+    );
   }
 }

@@ -1,6 +1,10 @@
-import { assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { assertEquals, assertThrows } from "@std/assert";
 import { extract } from "./extract.ts";
-import { LinkedMarkdownError, LMD_NO_FRONTMATTER, LMD_INVALID_FRONTMATTER } from "./errors.ts";
+import {
+  LinkedMarkdownError,
+  LMD_INVALID_FRONTMATTER,
+  LMD_NO_FRONTMATTER,
+} from "./errors.ts";
 
 Deno.test("extract YAML front matter", () => {
   const md = `---
@@ -129,7 +133,11 @@ Deno.test("extract throws LMD_INVALID_FRONTMATTER for no closing delimiter", () 
 
 Deno.test("LinkedMarkdownError has code and cause", () => {
   const inner = new Error("inner");
-  const err = new LinkedMarkdownError(LMD_INVALID_FRONTMATTER, "message", inner);
+  const err = new LinkedMarkdownError(
+    LMD_INVALID_FRONTMATTER,
+    "message",
+    inner,
+  );
   assertEquals(err.code, LMD_INVALID_FRONTMATTER);
   assertEquals(err.cause, inner);
   assertEquals(err.name, "LinkedMarkdownError");

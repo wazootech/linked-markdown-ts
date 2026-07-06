@@ -6,7 +6,8 @@
 
 TypeScript implementation of Linked Markdown, published through JSR.
 
-**Status:** All 40 conformance tests passing (14 unit + 26 conformance across parse, extract, and error tiers).
+**Status:** All 40 conformance tests passing (14 unit + 26 conformance across
+parse, extract, and error tiers).
 
 ## API
 
@@ -20,20 +21,24 @@ const result = extract(markdown);
 
 ### `extract<T>(content: string): { attrs: T, frontMatter: string, body: string }`
 
-Parses frontmatter from a Linked Markdown document. Supports YAML (`---`, `---yaml`, `= yaml =`), JSON (`---`, `---json`, `= json =`), and TOML (`---toml`, `+++`, `= toml =`) formats.
+Parses frontmatter from a Linked Markdown document. Supports YAML (`---`,
+`---yaml`, `= yaml =`), JSON (`---`, `---json`, `= json =`), and TOML
+(`---toml`, `+++`, `= toml =`) formats.
 
 - Strips UTF-8 BOM and normalizes CRLF to LF before parsing.
-- Returns `frontMatter` with a trailing newline for non-empty frontmatter (matching the conformance spec).
+- Returns `frontMatter` with a trailing newline for non-empty frontmatter
+  (matching the conformance spec).
 - `frontMatter` is `""` for empty frontmatter (`---\n---`).
 - `body` has leading newlines stripped (after the closing delimiter).
 
 ### `LinkedMarkdownError`
 
-Thrown for all error conditions. Has a `code` property for programmatic handling:
+Thrown for all error conditions. Has a `code` property for programmatic
+handling:
 
-| Code | When |
-|------|------|
-| `LMD_NO_FRONTMATTER` | No frontmatter delimiters found |
+| Code                      | When                                                                           |
+| ------------------------- | ------------------------------------------------------------------------------ |
+| `LMD_NO_FRONTMATTER`      | No frontmatter delimiters found                                                |
 | `LMD_INVALID_FRONTMATTER` | Unknown marker, unparseable content, non-object attrs, or no closing delimiter |
 
 ```ts
@@ -61,7 +66,8 @@ deno test --allow-read src/
 deno test --allow-read --allow-env=LMD_CONFORMANCE_ROOT test/conformance_test.ts
 ```
 
-The conformance suite is consumed from the `wazootech/linked-markdown` spec repository as a git submodule.
+The conformance suite is consumed from the `wazootech/linked-markdown` spec
+repository as a git submodule.
 
 ## Shoulders
 

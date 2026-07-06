@@ -11,6 +11,9 @@
     "test": "deno test --allow-read --allow-env=LMD_CONFORMANCE_ROOT",
     "check": "deno check src/mod.ts test/conformance_test.ts"
   },
+  "fmt": {
+    "exclude": ["test/linked-markdown-spec"]
+  },
   "publish": {
     "include": [
       "src",
