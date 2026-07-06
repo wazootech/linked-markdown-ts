@@ -53,7 +53,8 @@ try {
 
 ### RDF Compatibility
 
-The `attrs` returned by `extract()` is valid JSON-LD, directly convertible to RDF/JS quads:
+The `attrs` returned by `extract()` is valid JSON-LD, directly convertible to
+RDF/JS quads:
 
 ```ts
 import jsonld from "jsonld";
