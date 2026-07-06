@@ -14,7 +14,7 @@
     "check": "deno check src/mod.ts test/conformance_test.ts test/rdf_test.ts"
   },
   "fmt": {
-    "exclude": ["test/linked-markdown-spec"]
+    "exclude": ["test/linked-markdown-spec", "docs"]
   },
   "publish": {
     "include": [
