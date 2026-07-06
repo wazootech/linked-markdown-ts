@@ -3,127 +3,665 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Linked Markdown</title>
-  <meta name="description" content="TypeScript library for extracting structured frontmatter and RDF data from Linked Markdown documents. YAML, JSON, and TOML support.">
+  <title>Linked Markdown — TypeScript Library</title>
+  <meta name="description" content="TypeScript library for extracting structured YAML, JSON, and TOML frontmatter and RDF data from Linked Markdown documents.">
   <meta property="og:title" content="Linked Markdown">
-  <meta property="og:description" content="TypeScript library for extracting structured frontmatter and RDF data from Linked Markdown documents.">
+  <meta property="og:description" content="TypeScript implementation of Linked Markdown — extract structured frontmatter and RDF data. Published on JSR.">
   <meta property="og:url" content="https://linked-markdown.js.org">
   <meta property="og:image" content="https://linked-markdown.js.org/artwork.png">
-  <meta name="theme-color" content="#1a1a2e">
+  <meta name="theme-color" content="#0c0e14">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔗</text></svg>">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
   <style>
-    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg: #0c0e14;
+      --bg-card: #131622;
+      --bg-card-hover: #181c2b;
+      --bg-input: #090b10;
+      --border: rgba(255, 255, 255, 0.08);
+      --border-accent: rgba(126, 200, 160, 0.25);
+      --accent: #7ec8a0;
+      --accent-glow: rgba(126, 200, 160, 0.12);
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'JetBrains Mono', Consolas, monospace;
+      --radius: 12px;
+      --radius-sm: 8px;
+    }
+
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: 'Courier New', Courier, monospace;
-      background: #1a1a2e;
-      color: #e0e0e0;
+      font-family: var(--font-sans);
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      image-rendering: pixelated;
     }
+
+    /* Ambient Background Glow */
+    .bg-glow {
+      position: fixed;
+      top: -150px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 700px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(126, 200, 160, 0.07) 0%, rgba(56, 189, 248, 0.03) 50%, transparent 80%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
     .container {
-      max-width: 640px;
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+      position: relative;
+      z-index: 1;
       width: 100%;
-      padding: 2rem 1.5rem;
+    }
+
+    /* Header Nav */
+    header {
+      padding: 1.5rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav {
       display: flex;
-      flex-direction: column;
+      justify-content: space-between;
       align-items: center;
-      gap: 2rem;
     }
-    .artwork {
-      width: 100%;
-      max-width: 480px;
-      border: 3px solid #4a7c59;
-      border-radius: 0;
-      image-rendering: pixelated;
-    }
-    h1 {
-      font-size: 2rem;
-      font-weight: 700;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-      color: #7ec8a0;
-      text-align: center;
-    }
-    .subtitle {
-      font-size: 0.9rem;
-      color: #8899aa;
-      text-align: center;
-      line-height: 1.6;
-      max-width: 480px;
-    }
-    .links {
+
+    .brand {
       display: flex;
-      gap: 1rem;
-      flex-wrap: wrap;
-      justify-content: center;
+      align-items: center;
+      gap: 0.65rem;
+      text-decoration: none;
+      color: var(--text);
+      font-weight: 700;
+      font-size: 1.1rem;
     }
-    .link-btn {
+
+    .brand-icon {
+      width: 30px;
+      height: 30px;
+      background: rgba(126, 200, 160, 0.12);
+      border: 1px solid var(--border-accent);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+    }
+
+    .nav-link {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: color 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .nav-link:hover {
+      color: var(--accent);
+    }
+
+    /* Hero Section */
+    .hero {
+      padding: 3.5rem 0 2.5rem;
+      text-align: center;
+    }
+
+    .hero-badge-container {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+    }
+
+    .badge-item {
       display: inline-flex;
       align-items: center;
-      gap: 0.5rem;
-      padding: 0.75rem 1.5rem;
-      border: 2px solid #4a7c59;
+      height: 24px;
+      transition: transform 0.15s;
+    }
+
+    .badge-item:hover {
+      transform: translateY(-1px);
+    }
+
+    .hero h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      margin-bottom: 0.85rem;
+      background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 60%, #7ec8a0 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero .subtitle {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      max-width: 600px;
+      margin: 0 auto 2rem;
+      font-weight: 400;
+      line-height: 1.6;
+    }
+
+    /* Install Box Widget */
+    .install-box {
+      max-width: 540px;
+      margin: 0 auto;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    }
+
+    .install-tabs {
+      display: flex;
+      background: rgba(0, 0, 0, 0.25);
+      border-bottom: 1px solid var(--border);
+      padding: 0 0.5rem;
+    }
+
+    .tab-btn {
       background: transparent;
-      color: #7ec8a0;
-      text-decoration: none;
-      font-family: 'Courier New', Courier, monospace;
+      border: none;
+      color: var(--text-dim);
+      font-family: var(--font-sans);
+      font-size: 0.825rem;
+      font-weight: 500;
+      padding: 0.6rem 0.9rem;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s;
+    }
+
+    .tab-btn:hover {
+      color: var(--text-muted);
+    }
+
+    .tab-btn.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+
+    .install-cmd-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.8rem 1.1rem;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      background: var(--bg-input);
+    }
+
+    .install-cmd {
+      color: var(--text);
+      white-space: nowrap;
+      overflow-x: auto;
+      margin-right: 1rem;
+    }
+
+    .copy-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      font-family: var(--font-sans);
+      font-size: 0.775rem;
+      padding: 0.35rem 0.65rem;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      flex-shrink: 0;
+    }
+
+    .copy-btn:hover {
+      background: rgba(126, 200, 160, 0.15);
+      border-color: var(--border-accent);
+      color: var(--accent);
+    }
+
+    /* Section Headers */
+    .section-title {
+      font-size: 1.35rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.4rem;
+    }
+
+    .section-desc {
+      color: var(--text-muted);
       font-size: 0.9rem;
+      margin-bottom: 1.25rem;
+    }
+
+    /* Code Reference Section */
+    .code-section {
+      padding: 2rem 0;
+    }
+
+    .code-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.2);
+    }
+
+    .pane-header {
+      padding: 0.65rem 1.1rem;
+      font-size: 0.775rem;
+      font-weight: 600;
+      color: var(--text-dim);
       text-transform: uppercase;
       letter-spacing: 0.05em;
-      transition: background 0.15s, color 0.15s;
-    }
-    .link-btn:hover {
-      background: #4a7c59;
-      color: #1a1a2e;
-    }
-    .badges {
+      border-bottom: 1px solid var(--border);
+      background: rgba(0, 0, 0, 0.2);
       display: flex;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-      justify-content: center;
+      justify-content: space-between;
+      align-items: center;
     }
-    .badges img {
-      image-rendering: auto;
+
+    .code-block {
+      background: var(--bg-input);
+      padding: 1.15rem;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      line-height: 1.6;
+      overflow-x: auto;
+      color: #e2e8f0;
     }
-    .footer {
-      margin-top: 1rem;
-      font-size: 0.75rem;
-      color: #555;
+
+    .kw { color: #c084fc; }
+    .fn { color: #60a5fa; }
+    .str { color: #4ade80; }
+    .cmt { color: #64748b; font-style: italic; }
+
+    /* Formats Spec Table */
+    .formats-section {
+      padding: 2rem 0;
     }
-    .footer a {
-      color: #4a7c59;
-      text-decoration: none;
+
+    .table-container {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
     }
-    .footer a:hover { text-decoration: underline; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.875rem;
+    }
+
+    th {
+      background: rgba(0, 0, 0, 0.2);
+      padding: 0.75rem 1.15rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    td {
+      padding: 0.85rem 1.15rem;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    code {
+      font-family: var(--font-mono);
+      background: rgba(255, 255, 255, 0.06);
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.825rem;
+      color: var(--accent);
+      word-break: break-word;
+      overflow-wrap: anywhere;
+      max-width: 100%;
+    }
+
+    /* Features Grid */
+    .features-section {
+      padding: 2rem 0 3rem;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 1.25rem;
+    }
+
     @media (max-width: 480px) {
-      h1 { font-size: 1.5rem; }
-      .container { padding: 1.5rem 1rem; }
+      .features-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .feature-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.35rem;
+      transition: all 0.2s ease;
+    }
+
+    .feature-card:hover {
+      border-color: var(--border-accent);
+      transform: translateY(-2px);
+      background: var(--bg-card-hover);
+    }
+
+    .feature-icon {
+      font-size: 1.25rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .feature-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 0.35rem;
+      color: var(--text);
+    }
+
+    .feature-desc {
+      font-size: 0.825rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      word-break: break-word;
+    }
+
+    /* Footer */
+    footer {
+      margin-top: auto;
+      border-top: 1px solid var(--border);
+      padding: 2rem 0;
+      text-align: center;
+      font-size: 0.825rem;
+      color: var(--text-dim);
+    }
+
+    footer a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+
+    footer a:hover {
+      color: var(--accent);
+    }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: var(--accent);
+      color: #0c0e14;
+      font-weight: 600;
+      font-size: 0.825rem;
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius-sm);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.2s ease;
+      pointer-events: none;
+      z-index: 100;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
     }
   </style>
 </head>
 <body>
+  <div class="bg-glow"></div>
+
   <div class="container">
-    <img src="artwork.png" alt="Linked Markdown artwork" class="artwork" width="480" height="480">
-    <h1>Linked Markdown</h1>
-    <p class="subtitle">
-      TypeScript implementation of Linked Markdown — extract structured frontmatter
-      (YAML, JSON, TOML) and RDF data from markdown documents. Published on JSR.
-    </p>
-    <div class="badges">
-      <a href="https://jsr.io/@wazoo/linked-markdown"><img src="https://jsr.io/badgen/@wazoo/linked-markdown" alt="JSR"></a>
-      <a href="https://jsr.io/@wazoo/linked-markdown/score"><img src="https://jsr.io/badgen/@wazoo/linked-markdown/score" alt="JSR Score"></a>
-      <a href="https://github.com/wazootech/linked-markdown-ts"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT License"></a>
-    </div>
-    <div class="links">
-      <a href="https://jsr.io/@wazoo/linked-markdown" class="link-btn">📦 JSR Package</a>
-      <a href="https://github.com/wazootech/linked-markdown-ts" class="link-btn">&#x3C;/&#x3E; GitHub</a>
-    </div>
-    <div class="footer">
-      <a href="https://github.com/wazootech/linked-markdown-ts">wazootech/linked-markdown-ts</a> &middot; MIT
-    </div>
+    <!-- Navigation -->
+    <header>
+      <nav class="nav">
+        <a href="#" class="brand">
+          <div class="brand-icon">🔗</div>
+          <span>Linked Markdown</span>
+        </a>
+        <div class="nav-links">
+          <a href="https://jsr.io/@wazoo/linked-markdown" class="nav-link" target="_blank" rel="noopener">
+            <span>📦</span> JSR Package
+          </a>
+          <a href="https://github.com/wazootech/linked-markdown-ts" class="nav-link" target="_blank" rel="noopener">
+            <span>💻</span> GitHub
+          </a>
+        </div>
+      </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="hero-badge-container">
+        <a href="https://jsr.io/@wazoo/linked-markdown" target="_blank" class="badge-item">
+          <img src="https://jsr.io/badges/@wazoo/linked-markdown" alt="JSR Version">
+        </a>
+        <a href="https://jsr.io/@wazoo/linked-markdown/score" target="_blank" class="badge-item">
+          <img src="https://jsr.io/badges/@wazoo/linked-markdown/score" alt="JSR Score">
+        </a>
+        <a href="https://github.com/wazootech/linked-markdown-ts/blob/main/LICENSE" target="_blank" class="badge-item">
+          <img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT License">
+        </a>
+      </div>
+
+      <h1>Linked Markdown for TypeScript</h1>
+      <p class="subtitle">
+        Extract structured frontmatter (YAML, JSON, TOML) and JSON-LD RDF graph attributes from markdown documents with full spec conformance.
+      </p>
+
+      <!-- Package Installer -->
+      <div class="install-box">
+        <div class="install-tabs">
+          <button class="tab-btn active" onclick="switchInstall('deno')">Deno</button>
+          <button class="tab-btn" onclick="switchInstall('npm')">Node (npm)</button>
+          <button class="tab-btn" onclick="switchInstall('bun')">Bun</button>
+          <button class="tab-btn" onclick="switchInstall('pnpm')">pnpm</button>
+        </div>
+        <div class="install-cmd-container">
+          <span class="install-cmd" id="installCmd">deno add linked-markdown@jsr:@wazoo/linked-markdown</span>
+          <button class="copy-btn" onclick="copyInstallCmd()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+            Copy
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Code API Usage Section -->
+    <section class="code-section">
+      <h2 class="section-title">⚡ Quick Usage</h2>
+      <p class="section-desc">Parse frontmatter attributes, raw frontmatter text, and clean document body in a single call.</p>
+
+      <div class="code-card">
+        <div class="pane-header">
+          <span>TypeScript API Example</span>
+          <button class="copy-btn" onclick="copyCodeSnippet()">Copy Code</button>
+        </div>
+        <pre class="code-block" id="apiCode"><span class="kw">import</span> { extract, LinkedMarkdownError } <span class="kw">from</span> <span class="str">"@wazoo/linked-markdown"</span>;
+
+<span class="kw">const</span> markdown = <span class="str">`---
+@id: "https://example.org/note/1"
+@type: "KnowledgeNote"
+title: "Linked Markdown Document"
+tags: ["rdf", "typescript"]
+---
+
+# Hello Linked World
+This is the document body.`</span>;
+
+<span class="cmt">// Parse document</span>
+<span class="kw">const</span> { attrs, frontMatter, body } = <span class="fn">extract</span>(markdown);
+
+console.<span class="fn">log</span>(attrs.title);       <span class="cmt">// => "Linked Markdown Document"</span>
+console.<span class="fn">log</span>(attrs[<span class="str">"@type"</span>]);     <span class="cmt">// => "KnowledgeNote"</span>
+console.<span class="fn">log</span>(frontMatter);       <span class="cmt">// => Raw frontmatter string</span>
+console.<span class="fn">log</span>(body);              <span class="cmt">// => Clean body with leading newlines stripped</span></pre>
+      </div>
+    </section>
+
+    <!-- Supported Frontmatter Delimiters Table -->
+    <section class="formats-section">
+      <h2 class="section-title">📑 Supported Delimiters</h2>
+      <p class="section-desc">Automatic format detection across YAML, JSON, and TOML frontmatter markers.</p>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Format</th>
+              <th>Supported Markers</th>
+              <th>Default Object Type</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>YAML</strong></td>
+              <td><code>---</code> &nbsp;&middot;&nbsp; <code>---yaml</code> &nbsp;&middot;&nbsp; <code>= yaml =</code></td>
+              <td>YAML Object</td>
+            </tr>
+            <tr>
+              <td><strong>JSON</strong></td>
+              <td><code>---json</code> &nbsp;&middot;&nbsp; <code>= json =</code></td>
+              <td>JSON Object</td>
+            </tr>
+            <tr>
+              <td><strong>TOML</strong></td>
+              <td><code>---toml</code> &nbsp;&middot;&nbsp; <code>+++</code> &nbsp;&middot;&nbsp; <code>= toml =</code></td>
+              <td>TOML Object</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Features Grid -->
+    <section class="features-section">
+      <h2 class="section-title">✨ Core Highlights</h2>
+      <p class="section-desc">Built for reliable parsing, knowledge graph compatibility, and spec adherence.</p>
+
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">🕸️</div>
+          <div class="feature-title">RDF & JSON-LD Native</div>
+          <div class="feature-desc">Frontmatter attributes format as valid JSON-LD for direct conversion to RDF quads with <code>jsonld.toRDF()</code>.</div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">🧼</div>
+          <div class="feature-title">BOM & Line Hygiene</div>
+          <div class="feature-desc">Strips UTF-8 BOM markers and normalizes Windows CRLF line endings automatically prior to extraction.</div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">🛡️</div>
+          <div class="feature-title">Typed Error Codes</div>
+          <div class="feature-desc">Throws <code>LinkedMarkdownError</code> with programmatic codes like <code>LMD_NO_FRONTMATTER</code> and <code>LMD_INVALID_FRONTMATTER</code>.</div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">🎯</div>
+          <div class="feature-title">Conformance Suite</div>
+          <div class="feature-desc">Tested directly against the cross-language conformance suite from <code>wazootech/linked-markdown</code>.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      <p>
+        Published on <a href="https://jsr.io/@wazoo/linked-markdown" target="_blank">JSR</a> &middot; 
+        Source on <a href="https://github.com/wazootech/linked-markdown-ts" target="_blank">GitHub</a> &middot; 
+        MIT License
+      </p>
+    </footer>
   </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast">Copied to clipboard!</div>
+
+  <!-- Interactive Script -->
+  <script>
+    const installCmds = {
+      deno: 'deno add linked-markdown@jsr:@wazoo/linked-markdown',
+      npm: 'npx jsr add @wazoo/linked-markdown',
+      bun: 'bunx jsr add @wazoo/linked-markdown',
+      pnpm: 'pnpm dlx jsr add @wazoo/linked-markdown'
+    };
+
+    function switchInstall(pkg) {
+      document.querySelectorAll('.install-tabs .tab-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.textContent.toLowerCase().includes(pkg));
+      });
+      document.getElementById('installCmd').textContent = installCmds[pkg];
+    }
+
+    function copyInstallCmd() {
+      const text = document.getElementById('installCmd').textContent;
+      navigator.clipboard.writeText(text);
+      showToast('Command copied!');
+    }
+
+    function copyCodeSnippet() {
+      const code = `import { extract, LinkedMarkdownError } from "@wazoo/linked-markdown";\n\nconst { attrs, frontMatter, body } = extract(markdown);`;
+      navigator.clipboard.writeText(code);
+      showToast('Code snippet copied!');
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2000);
+    }
+  </script>
 </body>
 </html>
