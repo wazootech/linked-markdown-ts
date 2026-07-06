@@ -66,3 +66,15 @@ for (const testCase of manifest.cases) {
 function readFixture(path: string): Promise<string> {
   return Deno.readTextFile(new URL(path, conformanceRoot));
 }
+
+Deno.test("LinkedMarkdownError has code and cause", () => {
+  const inner = new Error("inner");
+  const err = new LinkedMarkdownError(
+    "LMD_INVALID_FRONTMATTER",
+    "message",
+    inner,
+  );
+  assertEquals(err.code, "LMD_INVALID_FRONTMATTER");
+  assertEquals(err.cause, inner);
+  assertEquals(err.name, "LinkedMarkdownError");
+});
