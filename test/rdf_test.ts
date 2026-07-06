@@ -44,7 +44,9 @@ Deno.test("missing-id generates blank node", async () => {
   const quads = await jsonld.toRDF(result.attrs);
 
   assertGreater(quads.length, 0);
-  const hasBlankNode = quads.some((q: Quad) => q.subject.termType === "BlankNode");
+  const hasBlankNode = quads.some((q: Quad) =>
+    q.subject.termType === "BlankNode"
+  );
   assertEquals(hasBlankNode, true);
 });
 
