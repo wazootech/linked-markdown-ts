@@ -1,7 +1,7 @@
 import { assertEquals, assertGreater } from "@std/assert";
 import { extract } from "../src/mod.ts";
-import jsonld from "npm:jsonld";
-import type { Quad } from "npm:@rdfjs/types";
+import jsonld from "jsonld";
+import type { Quad } from "@rdfjs/types";
 
 const conformanceRoot = new URL(
   "./linked-markdown-spec/conformance/",
