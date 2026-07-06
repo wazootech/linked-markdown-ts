@@ -51,6 +51,17 @@ try {
 }
 ```
 
+### RDF Compatibility
+
+The `attrs` returned by `extract()` is valid JSON-LD, directly convertible to RDF/JS quads:
+
+```ts
+import jsonld from "jsonld";
+
+const result = extract(markdown);
+const quads = await jsonld.toRDF(result.attrs);
+```
+
 ## Development
 
 ```sh
