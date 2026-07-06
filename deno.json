@@ -8,8 +8,8 @@
     "@std/front-matter": "jsr:@std/front-matter@^1.0.9"
   },
   "tasks": {
-    "test": "deno test --allow-read --allow-env=LMD_CONFORMANCE_ROOT",
-    "check": "deno check src/mod.ts test/conformance_test.ts"
+    "test": "deno test --allow-read --allow-env",
+    "check": "deno check src/mod.ts test/conformance_test.ts test/rdf_test.ts"
   },
   "fmt": {
     "exclude": ["test/linked-markdown-spec"]
