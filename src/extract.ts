@@ -40,7 +40,7 @@ export function extract<T>(content: string): Extract<T> {
   }
 
   // Check if any known opener exists at all
-  const hasOpener = /^(---|---\w+\n|\+\+\+\n|= \w+ =\n)/.test(content);
+  const hasOpener = /^(---|\+\+\+(?:\n|$)|= \w+ =(?:\n|$))/.test(content);
   if (!hasOpener) {
     throw new LinkedMarkdownError(LMD_NO_FRONTMATTER);
   }
