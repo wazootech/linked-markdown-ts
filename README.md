@@ -8,19 +8,34 @@ TypeScript implementation of Linked Markdown, published through JSR.
 
 ## Installation
 
+### Deno
+
 ```sh
-# Deno
 deno add linked-markdown@jsr:@wazoo/linked-markdown
 ```
 
+```ts
+import { extract } from "linked-markdown";
+```
+
+### Node (npm)
+
 ```sh
-# Node (npm)
 npx jsr add @wazoo/linked-markdown
 ```
 
+```ts
+import { extract } from "@wazoo/linked-markdown";
+```
+
+### Bun
+
 ```sh
-# Bun
 bunx jsr add @wazoo/linked-markdown
+```
+
+```ts
+import { extract } from "@wazoo/linked-markdown";
 ```
 
 ## API
