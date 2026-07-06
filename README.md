@@ -6,9 +6,6 @@
 
 TypeScript implementation of Linked Markdown, published through JSR.
 
-**Status:** All 40 conformance tests passing (14 unit + 26 conformance across
-parse, extract, and error tiers).
-
 ## Installation
 
 ```sh
