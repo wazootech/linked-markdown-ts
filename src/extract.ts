@@ -1,79 +1,60 @@
 import { extractJson, extractToml, extractYaml, test } from "@std/front-matter";
 import type { Extract } from "@std/front-matter";
+import { LinkedMarkdownError, LMD_INVALID_FRONTMATTER, LMD_NO_FRONTMATTER } from "./errors.ts";
 
 /**
- * extract extracts the raw frontmatter block and body from a Linked Markdown
- * document. This is the low-level AST boundary — it returns the raw string,
- * the body, and the parsed attrs object without any normalization or merge.
+ * extract extracts front matter and body content from a LinkedMarkdown document.
  *
- * {@link https://github.com/wazootech/linked-markdown | Linked Markdown}
- *
- * @example Extract front matter (YAML)
- * ```ts
- * import { extract } from "@wazoo/linked-markdown";
- * import { assertEquals } from "@std/assert";
- *
- * const output = `---
- * title: "Three dashes marks the spot"
- * ---
- * Hello, world!`;
- * const result = extract(output);
- *
- * assertEquals(result, {
- *   frontMatter: 'title = "Three dashes marks the spot"',
- *   body: "Hello, world!",
- *   attrs: { title: "Three dashes marks the spot" },
- * });
- * ```
- *
- * @example Extract front matter (TOML)
- * ```ts
- * import { extract } from "@wazoo/linked-markdown";
- * import { assertEquals } from "@std/assert";
- *
- * const output = `---
- * title = "TOML front matter"
- * ---
- * Hello, world!`;
- * const result = extract(output);
- *
- * assertEquals(result, {
- *   frontMatter: 'title = "TOML front matter"',
- *   body: "Hello, world!",
- *   attrs: { title: "TOML front matter" },
- * });
- * ```
- *
- * @example Extract front matter (JSON)
- * ```ts
- * import { extract } from "@wazoo/linked-markdown";
- * import { assertEquals } from "@std/assert";
- *
- * const output = `---
- * {
- *   "title": "JSON front matter"
- * }
- * ---
- * Hello, world!`;
- * const result = extract(output);
- *
- * assertEquals(result, {
- *   frontMatter: '{\n  "title": "JSON front matter"\n}',
- *   body: "Hello, world!",
- *   attrs: { title: "JSON front matter" },
- * });
- * ```
- *
- * @typeParam T The type of the parsed front matter.
- * @param content The text to extract front matter from.
- * @returns The raw AST: frontMatter string, body string, and attrs object.
+ * @param content The LinkedMarkdown document content.
+ * @returns An object containing the extracted front matter and body content.
  */
-export function extract<T>(
-  content: string,
-): Extract<T> {
+export function extract<T>(content: string): Extract<T> {
   content = content.replace(/^\uFEFF/, "").replace(/\r\n/g, "\n");
-  if (test(content, ["json"])) return extractJson<T>(content);
-  if (test(content, ["toml"])) return extractToml<T>(content);
-  if (test(content, ["yaml"])) return extractYaml<T>(content);
-  throw new TypeError("No valid front matter found");
+
+  // Check for unknown ---<word> marker
+  const markerMatch = content.match(/^---(\w+)/);
+  if (markerMatch && !["yaml", "json", "toml", ""].includes(markerMatch[1].toLowerCase())) {
+    throw new LinkedMarkdownError(LMD_INVALID_FRONTMATTER, `Unknown front matter marker: ${markerMatch[1]}`);
+  }
+
+  // Check for unknown = <word> = marker
+  const equalsMatch = content.match(/^= (\w+) =/);
+  if (equalsMatch && !["yaml", "json", "toml"].includes(equalsMatch[1].toLowerCase())) {
+    throw new LinkedMarkdownError(LMD_INVALID_FRONTMATTER, `Unknown front matter marker: ${equalsMatch[1]}`);
+  }
+
+  // Check if any known opener exists at all
+  const hasOpener = /^(---|---\w+\n|\+\+\+\n|= \w+ =\n)/.test(content);
+  if (!hasOpener) {
+    throw new LinkedMarkdownError(LMD_NO_FRONTMATTER);
+  }
+
+  try {
+    let result: Extract<T>;
+    if (test(content, ["json"])) {
+      result = extractJson<T>(content);
+    } else if (test(content, ["toml"])) {
+      result = extractToml<T>(content);
+    } else if (test(content, ["yaml"])) {
+      result = extractYaml<T>(content);
+    } else {
+      // Opener exists but no format matched (likely unclosed)
+      throw new LinkedMarkdownError(LMD_INVALID_FRONTMATTER);
+    }
+
+    // Validate attrs is a plain object
+    if (typeof result.attrs !== "object" || result.attrs === null || Array.isArray(result.attrs)) {
+      throw new LinkedMarkdownError(LMD_INVALID_FRONTMATTER);
+    }
+
+    return {
+      ...result,
+      frontMatter: result.frontMatter && !result.frontMatter.endsWith("\n")
+        ? result.frontMatter + "\n"
+        : result.frontMatter,
+    };
+  } catch (e) {
+    if (e instanceof LinkedMarkdownError) throw e;
+    throw new LinkedMarkdownError(LMD_INVALID_FRONTMATTER, undefined, e instanceof Error ? e : undefined);
+  }
 }
