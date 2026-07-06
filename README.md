@@ -6,6 +6,8 @@
 
 TypeScript implementation of Linked Markdown, published through JSR.
 
+See the [wazootech/linked-markdown](https://github.com/wazootech/linked-markdown) repository for the specification, conformance suite, and reference documentation.
+
 ## Installation
 
 ### Deno
