@@ -1,8 +1,15 @@
-# `linked-markdown-ts`
-
-[![JSR](https://jsr.io/badges/@wazoo/linked-markdown)](https://jsr.io/@wazoo/linked-markdown)
-[![JSR Score](https://jsr.io/badges/@wazoo/linked-markdown/score)](https://jsr.io/@wazoo/linked-markdown)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+<p align="center">
+  <a href="https://docs.wazoo.dev">
+    <img src="https://wazoo.dev/assets/wazoo.svg" alt="Wazoo Worlds" width="120" />
+  </a>
+  <br /><br />
+  <em>TypeScript implementation of Linked Markdown.</em>
+  <br /><br />
+  <a href="https://jsr.io/@wazoo/linked-markdown"><img src="https://jsr.io/badges/@wazoo/linked-markdown" alt="JSR" /></a>
+  <a href="https://jsr.io/@wazoo/linked-markdown/score"><img src="https://jsr.io/badges/@wazoo/linked-markdown/score" alt="JSR Score" /></a>
+  <a href="https://github.com/wazootech/linked-markdown-ts"><img src="https://img.shields.io/badge/GitHub-black?logo=github" alt="GitHub" /></a>
+  <a href="https://deepwiki.com/wazootech/linked-markdown-ts"><img src="https://deepwiki.com/badge.svg" alt="Ask DeepWiki" /></a>
+</p>
 
 TypeScript implementation of Linked Markdown, published through JSR.
 
