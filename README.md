@@ -18,44 +18,66 @@ See the
 repository for the specification, conformance suite, and reference
 documentation.
 
-## Installation
+## Install
 
-### Deno
+### Package managers
 
-```sh
-deno add linked-markdown@jsr:@wazoo/linked-markdown
-```
-
-```ts
-import { extract } from "linked-markdown";
-```
-
-### Node (npm)
+Run the command for your package manager.
 
 ```sh
-npx jsr add @wazoo/linked-markdown
-```
+# Deno
+deno add jsr:@wazoo/linked-markdown
 
-```ts
-import { extract } from "@wazoo/linked-markdown";
-```
-
-### Bun
-
-```sh
+# bun
 bunx jsr add @wazoo/linked-markdown
+
+# npm
+npx jsr add @wazoo/linked-markdown
+
+# pnpm
+pnpm add jsr:@wazoo/linked-markdown
+
+# yarn
+yarn add jsr:@wazoo/linked-markdown
 ```
+
+For older pnpm or Yarn versions, run `npx jsr add @wazoo/linked-markdown` from
+your project. The JSR CLI detects your package manager from its lockfile.
+
+Then import from the package name.
 
 ```ts
 import { extract } from "@wazoo/linked-markdown";
 ```
 
-### Browser (CDN)
+### CDN (browser / no build step)
 
-For no-build browser demos, import from esm.sh:
+[esm.sh](https://esm.sh) serves the JSR package as a ready-to-import ES module.
 
 ```js
-import { extract } from "https://esm.sh/@jsr/wazoo__linked-markdown@0.1.0";
+import { extract } from "https://esm.sh/jsr/@wazoo/linked-markdown@0.1.0";
+```
+
+An import map lets browser modules import from the package name.
+
+```html
+<script type="importmap">
+{
+  "imports": {
+    "@wazoo/linked-markdown": "https://esm.sh/jsr/@wazoo/linked-markdown@0.1.0"
+  }
+}
+</script>
+<script type="module">
+import { extract } from "@wazoo/linked-markdown";
+</script>
+```
+
+The standalone ES2022 bundle pins the package version and build target in one
+cacheable URL.
+
+```js
+import { extract } from "https://esm.sh/@jsr/wazoo__linked-markdown@0.1.0/es2022/wazoo__linked-markdown.bundle.mjs";
 ```
 
 ## API
