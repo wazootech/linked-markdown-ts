@@ -23,5 +23,6 @@
       "LICENSE",
       "deno.json"
     ]
-  }
+  },
+  "compilerOptions": { "strict": true }
 }
