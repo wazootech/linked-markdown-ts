@@ -1,1 +1,3 @@
 node_modules/
+# jsr publish regenerates a Deno lockfile on every run; it is never committed.
+deno.lock

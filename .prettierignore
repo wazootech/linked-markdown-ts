@@ -1,0 +1,5 @@
+# Not formatted by bun fmt: the vendored spec submodule, the static docs site
+# (hand-written HTML and generated artwork), and the lockfile.
+test/linked-markdown-spec/
+docs/
+bun.lock
