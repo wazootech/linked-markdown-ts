@@ -138,15 +138,16 @@ const quads = await jsonld.toRDF(result.attrs);
 
 ```sh
 git submodule update --init --recursive
+bun install
+
+# Format, lint, type check, manifest check and tests (what CI runs)
+bun run ci
 
 # Run all tests
-deno test --allow-read --allow-env=LMD_CONFORMANCE_ROOT
-
-# Run unit tests only
-deno test --allow-read src/
+bun test
 
 # Run conformance tests only
-deno test --allow-read --allow-env=LMD_CONFORMANCE_ROOT test/conformance_test.ts
+bun test test/conformance_test.ts
 ```
 
 The conformance suite is consumed from the `wazootech/linked-markdown` spec
