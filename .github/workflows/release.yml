@@ -16,6 +16,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          submodules: recursive
 
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: "1.x"
+      - run: bun install --frozen-lockfile --ignore-scripts
+      # A tag must not publish an unverified tree.
+      - run: bun run ci
+      # jsr (pinned in devDependencies) bundles its own Deno-based publisher and
+      # downloads it on first use, so this runner needs no Deno install.
+      - name: Publish dry run (smoke)
+        run: bun run publish:dry
       - name: Publish package
-        run: npx jsr publish
+        run: bunx jsr publish
