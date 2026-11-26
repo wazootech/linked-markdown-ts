@@ -62,14 +62,14 @@ An import map lets browser modules import from the package name.
 
 ```html
 <script type="importmap">
-{
-  "imports": {
-    "@wazoo/linked-markdown": "https://esm.sh/jsr/@wazoo/linked-markdown@0.1.0"
+  {
+    "imports": {
+      "@wazoo/linked-markdown": "https://esm.sh/jsr/@wazoo/linked-markdown@0.1.0"
+    }
   }
-}
 </script>
 <script type="module">
-import { extract } from "@wazoo/linked-markdown";
+  import { extract } from "@wazoo/linked-markdown";
 </script>
 ```
 

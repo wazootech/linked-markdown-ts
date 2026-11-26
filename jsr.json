@@ -7,12 +7,7 @@
     "@std/front-matter": "jsr:@std/front-matter@^1.0.9"
   },
   "publish": {
-    "include": [
-      "src",
-      "README.md",
-      "LICENSE",
-      "jsr.json"
-    ]
+    "include": ["src", "README.md", "LICENSE", "jsr.json"]
   },
   "compilerOptions": { "strict": true }
 }

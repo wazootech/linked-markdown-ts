@@ -48,8 +48,8 @@ test("missing-id generates blank node", async () => {
   const quads = await jsonld.toRDF(result.attrs);
 
   assert.ok(quads.length > 0);
-  const hasBlankNode = quads.some((q: Quad) =>
-    q.subject.termType === "BlankNode"
+  const hasBlankNode = quads.some(
+    (q: Quad) => q.subject.termType === "BlankNode",
   );
   assert.equal(hasBlankNode, true);
 });
