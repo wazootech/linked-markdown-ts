@@ -44,6 +44,7 @@ this repo's specifics:
   `bun install --frozen-lockfile`, so commit any `bun.lock` change.
 - `release.yml` publishes on a `v*` tag (or manual dispatch): it runs
   `bun run ci` and a publish dry run before `bunx jsr publish`.
-- `code-health.yml` only warns: files over 120 lines of code (300 for tests) and
-  `TODO`/`FIXME` without an issue link. There are no exclusions.
+- `code-health.yml` fails on a file over 120 lines of code (300 for tests);
+  files that were already over it are listed there with a ceiling that only
+  shrinks. A `TODO`/`FIXME` without an issue link only warns.
 - `.github/CODEOWNERS` routes review to the repo owner.
