@@ -1,4 +1,6 @@
-import { assertEquals, assertGreater } from "@std/assert";
+import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
+import { test } from "node:test";
 import { extract } from "../src/mod.ts";
 import jsonld from "jsonld";
 import type { Quad } from "@rdfjs/types";
@@ -8,15 +10,16 @@ const conformanceRoot = new URL(
   import.meta.url,
 );
 
-Deno.test("valid-yaml-marker loads into RDF/JS quads", async () => {
-  const input = await Deno.readTextFile(
+test("valid-yaml-marker loads into RDF/JS quads", async () => {
+  const input = await readFile(
     new URL("cases/valid-yaml-marker/input.md", conformanceRoot),
+    "utf8",
   );
   const result = extract<Record<string, unknown>>(input);
 
   const quads = await jsonld.toRDF(result.attrs);
 
-  assertGreater(quads.length, 0);
+  assert.ok(quads.length > 0);
 
   const hasType = quads.some(
     (q: Quad) =>
@@ -24,7 +27,7 @@ Deno.test("valid-yaml-marker loads into RDF/JS quads", async () => {
       q.predicate.value === "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" &&
       q.object.value === "https://schema.org/Article",
   );
-  assertEquals(hasType, true);
+  assert.equal(hasType, true);
 
   const hasName = quads.some(
     (q: Quad) =>
@@ -32,27 +35,29 @@ Deno.test("valid-yaml-marker loads into RDF/JS quads", async () => {
       q.predicate.value === "https://schema.org/name" &&
       q.object.value === "Delimiter Fixture",
   );
-  assertEquals(hasName, true);
+  assert.equal(hasName, true);
 });
 
-Deno.test("missing-id generates blank node", async () => {
-  const input = await Deno.readTextFile(
+test("missing-id generates blank node", async () => {
+  const input = await readFile(
     new URL("cases/missing-id/input.md", conformanceRoot),
+    "utf8",
   );
   const result = extract<Record<string, unknown>>(input);
 
   const quads = await jsonld.toRDF(result.attrs);
 
-  assertGreater(quads.length, 0);
+  assert.ok(quads.length > 0);
   const hasBlankNode = quads.some((q: Quad) =>
     q.subject.termType === "BlankNode"
   );
-  assertEquals(hasBlankNode, true);
+  assert.equal(hasBlankNode, true);
 });
 
-Deno.test("missing-type produces no rdf:type quad", async () => {
-  const input = await Deno.readTextFile(
+test("missing-type produces no rdf:type quad", async () => {
+  const input = await readFile(
     new URL("cases/missing-type/input.md", conformanceRoot),
+    "utf8",
   );
   const result = extract<Record<string, unknown>>(input);
 
@@ -62,12 +67,13 @@ Deno.test("missing-type produces no rdf:type quad", async () => {
     (q: Quad) =>
       q.predicate.value === "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
   );
-  assertEquals(typeQuads.length, 0);
+  assert.equal(typeQuads.length, 0);
 });
 
-Deno.test("canonical-type produces correct quads", async () => {
-  const input = await Deno.readTextFile(
+test("canonical-type produces correct quads", async () => {
+  const input = await readFile(
     new URL("cases/canonical-type/input.md", conformanceRoot),
+    "utf8",
   );
   const result = extract<Record<string, unknown>>(input);
 
@@ -79,16 +85,17 @@ Deno.test("canonical-type produces correct quads", async () => {
       q.predicate.value === "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" &&
       q.object.value === "https://schema.org/Note",
   );
-  assertEquals(hasType, true);
+  assert.equal(hasType, true);
 });
 
-Deno.test("bare-keywords-preserved produces no quads without context", async () => {
-  const input = await Deno.readTextFile(
+test("bare-keywords-preserved produces no quads without context", async () => {
+  const input = await readFile(
     new URL("cases/bare-keywords-preserved/input.md", conformanceRoot),
+    "utf8",
   );
   const result = extract<Record<string, unknown>>(input);
 
   const quads = await jsonld.toRDF(result.attrs);
 
-  assertEquals(quads.length, 0);
+  assert.equal(quads.length, 0);
 });

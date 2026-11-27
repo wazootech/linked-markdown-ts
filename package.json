@@ -1,0 +1,16 @@
+{
+  "name": "@wazoo/linked-markdown",
+  "private": true,
+  "type": "module",
+  "description": "Bun toolchain manifest for @wazoo/linked-markdown. The published package is described by deno.json (jsr.json after the cutover); scripts/check-manifests.ts keeps the two in sync.",
+  "packageManager": "bun@1.4.5",
+  "exports": "./src/mod.ts",
+  "scripts": {
+    "test": "bun test"
+  },
+  "dependencies": {
+    "@rdfjs/types": "^2.0.0",
+    "@std/front-matter": "npm:@jsr/std__front-matter@^1.0.9",
+    "jsonld": "^9.0.0"
+  }
+}

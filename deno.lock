@@ -1,24 +1,17 @@
 {
   "version": "5",
   "specifiers": {
-    "jsr:@std/assert@^1.0.16": "1.0.19",
     "jsr:@std/collections@^1.1.3": "1.3.0",
     "jsr:@std/front-matter@^1.0.9": "1.0.9",
-    "jsr:@std/internal@^1.0.12": "1.0.14",
     "jsr:@std/toml@^1.0.3": "1.0.11",
     "jsr:@std/yaml@^1.0.5": "1.1.0",
+    "npm:@jsr/std__front-matter@^1.0.9": "1.0.9",
     "npm:@rdfjs/types@*": "2.0.1",
     "npm:@rdfjs/types@2": "2.0.1",
     "npm:jsonld@*": "9.0.0",
     "npm:jsonld@9": "9.0.0"
   },
   "jsr": {
-    "@std/assert@1.0.19": {
-      "integrity": "eaada96ee120cb980bc47e040f82814d786fe8162ecc53c91d8df60b8755991e",
-      "dependencies": [
-        "jsr:@std/internal"
-      ]
-    },
     "@std/collections@1.1.3": {
       "integrity": "bf8b0818886df6a32b64c7d3b037a425111f28278d69fd0995aeb62777c986b0"
     },
@@ -31,9 +24,6 @@
         "jsr:@std/toml",
         "jsr:@std/yaml"
       ]
-    },
-    "@std/internal@1.0.14": {
-      "integrity": "291516b3d4c35024d6ffbc0a9df5bf4c64116e05b50012cf846710152d2ffdf7"
     },
     "@std/toml@1.0.11": {
       "integrity": "e084988b872ca4bad6aedfb7350f6eeed0e8ba88e9ee5e1590621c5b5bb8f715",
@@ -52,6 +42,29 @@
         "ky",
         "undici"
       ]
+    },
+    "@jsr/std__collections@1.4.0": {
+      "integrity": "sha512-Px3STXCAB/zjWh2xpV0C1vyTVlJe8IVmzktBP+9WZFAJ6ihE9jG4mz0+stRdFC8ksf5bHP2b/dc2qADD9jJTKg==",
+      "tarball": "https://npm.jsr.io/~/11/@jsr/std__collections/1.4.0.tgz"
+    },
+    "@jsr/std__front-matter@1.0.9": {
+      "integrity": "sha512-CSz8B8ABdHk9O1sbeIhR+hwIfrIImhTzCMxPWnFmwtuoIHoOAqHQJKmKFl0r2MYD5TZlN+t+Z+0wlp0dfU0TaA==",
+      "dependencies": [
+        "@jsr/std__toml",
+        "@jsr/std__yaml"
+      ],
+      "tarball": "https://npm.jsr.io/~/11/@jsr/std__front-matter/1.0.9.tgz"
+    },
+    "@jsr/std__toml@1.0.11": {
+      "integrity": "sha512-+LZAizoPAPwMDmRZr86/xPrbO8E0Oq0BJ70mr1fNMobJ/6X6v15Jk16ZClFGukWgzBMd8ggiMWnzp24+N3VNZg==",
+      "dependencies": [
+        "@jsr/std__collections"
+      ],
+      "tarball": "https://npm.jsr.io/~/11/@jsr/std__toml/1.0.11.tgz"
+    },
+    "@jsr/std__yaml@1.3.0": {
+      "integrity": "sha512-TuFbXlSy3nRuQuR8co2t7yzhv53ObdYZZidn8M958Glj6vBp5b7nxg7wTN8VTyCwC3vpbr6Mfdx9auNe/BMAVA==",
+      "tarball": "https://npm.jsr.io/~/11/@jsr/std__yaml/1.3.0.tgz"
     },
     "@rdfjs/types@2.0.1": {
       "integrity": "sha512-uyAzpugX7KekAXAHq26m3JlUIZJOC0uSBhpnefGV5i15bevDyyejoB7I+9MKeUrzXD8OOUI3+4FeV1wwQr5ihA==",
@@ -108,10 +121,16 @@
   },
   "workspace": {
     "dependencies": [
-      "jsr:@std/assert@^1.0.16",
       "jsr:@std/front-matter@^1.0.9",
       "npm:@rdfjs/types@2",
       "npm:jsonld@9"
-    ]
+    ],
+    "packageJson": {
+      "dependencies": [
+        "npm:@jsr/std__front-matter@^1.0.9",
+        "npm:@rdfjs/types@2",
+        "npm:jsonld@9"
+      ]
+    }
   }
 }
