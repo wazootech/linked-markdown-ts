@@ -7,27 +7,12 @@ on:
     branches: [main]
 
 jobs:
+  # Format, lint, type check, manifest check and tests all run through
+  # `bun run ci`. Bun floats on 1.x on purpose so a Bun regression surfaces
+  # early. The publish dry run goes through the jsr CLI (a pinned devDependency
+  # that bundles its own publisher), so no Deno is installed anywhere in CI.
+  # Named `test` because branch protection on main requires that check.
   test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          submodules: recursive
-
-      - uses: denoland/setup-deno@22d081ff2d3a40755e97629de92e3bcbfa7cf2ed # v2.0.5
-        with:
-          deno-version: v2.9.8
-      - run: deno install --frozen
-
-      - run: deno fmt --check
-      - run: deno lint
-      - run: deno task check
-      - run: deno task test
-
-  # The same tests must also pass on Bun (Deno -> Bun migration,
-  # wazootech/workspace#50). Bun floats on 1.x on purpose so a Bun regression
-  # surfaces early. Format, lint and type check stay on Deno until the cutover.
-  bun:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -38,4 +23,5 @@ jobs:
         with:
           bun-version: "1.x"
       - run: bun install --frozen-lockfile --ignore-scripts
-      - run: bun test
+      - run: bun run ci
+      - run: bun run publish:dry

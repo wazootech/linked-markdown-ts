@@ -60,7 +60,8 @@ export function extract<T>(content: string): Extract<T> {
 
     // Validate attrs is a plain object
     if (
-      typeof result.attrs !== "object" || result.attrs === null ||
+      typeof result.attrs !== "object" ||
+      result.attrs === null ||
       Array.isArray(result.attrs)
     ) {
       throw new LinkedMarkdownError(LMD_INVALID_FRONTMATTER);
@@ -68,9 +69,10 @@ export function extract<T>(content: string): Extract<T> {
 
     return {
       ...result,
-      frontMatter: result.frontMatter && !result.frontMatter.endsWith("\n")
-        ? result.frontMatter + "\n"
-        : result.frontMatter,
+      frontMatter:
+        result.frontMatter && !result.frontMatter.endsWith("\n")
+          ? result.frontMatter + "\n"
+          : result.frontMatter,
     };
   } catch (e) {
     if (e instanceof LinkedMarkdownError) throw e;
